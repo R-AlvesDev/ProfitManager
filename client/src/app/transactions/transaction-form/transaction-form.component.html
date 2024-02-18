@@ -1,15 +1,16 @@
 <h1>Insert Income/Outcome</h1>
-<form>
+<form [formGroup]="transactionForm" (ngSubmit)="onSubmit()">
     <p>Amount</p>
-    <input type="number" name="amount" id="" min="0">
+    <input type="number" formControlName="amount" min="0">
     <p>Category</p>
-    <input type="text" name="category" id="">
+    <input type="text" formControlName="category">
     <p>Type</p>
-    <select name="type" id= "" size="2">
+    <select formControlName="type">
         <option value="Income">Income</option>
         <option value="Outcome">Outcome</option>
     </select>
     <p>Date</p>
-    <input type="date" name="date" id="">
+    <input type="date" formControlName="date">
     <button type="submit">Submit</button>
+    <button type="button">Cancel</button>
 </form>

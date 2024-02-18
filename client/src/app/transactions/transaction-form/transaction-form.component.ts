@@ -1,9 +1,12 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { TransactionService } from '../../transaction.service';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-transaction-form',
+  standalone: true,
+  imports: [ReactiveFormsModule],
   templateUrl: './transaction-form.component.html',
   styleUrls: ['./transaction-form.component.css']
 })
