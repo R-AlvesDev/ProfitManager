@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { TransactionService } from '../../transaction.service';
 import { ReactiveFormsModule } from '@angular/forms';
+import { NavigationService } from '../../navigation.service';
 
 @Component({
   selector: 'app-transaction-form',
@@ -13,7 +14,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 export class TransactionFormComponent {
   transactionForm: FormGroup;
 
-  constructor(private formBuilder: FormBuilder, private transactionService: TransactionService) {
+  constructor(private formBuilder: FormBuilder, private transactionService: TransactionService, public navigationService: NavigationService) {
     this.transactionForm = this.formBuilder.group({
       amount: '',
       category: '',
@@ -22,12 +23,16 @@ export class TransactionFormComponent {
     });
   }
 
+  cancel(): void {
+    this.navigationService.navigateToDashboard();
+  }
   onSubmit(): void {
     console.log(this.transactionForm.value);
-    this.transactionService.createTransaction(this.transactionForm.value)
-    .subscribe({
-      next: (response) => console.log('Transaction created', response),
-      error: (error) => console.error('Error creating transaction', error)
-    });
+    if(this.transactionForm.value.amount && this.transactionForm.value.category && this.transactionForm.value.type){
+      this.transactionService.createTransaction(this.transactionForm.value);
+    }
+    else{
+      console.error('Error creating transaction: Missing data from transaction');
+    }
   }
 }

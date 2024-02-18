@@ -4,7 +4,7 @@ import { TransactionFormComponent } from './transactions/transaction-form/transa
 import { NgModule } from '@angular/core';
 
 export const routes: Routes = [
-  { path: '', component: DashboardComponent }, // Dashboard as default route
+  { path: 'dashboard', component: DashboardComponent }, // Dashboard as default route
   { path: 'transactions/new', component: TransactionFormComponent } // Route for transaction form
 ];
 

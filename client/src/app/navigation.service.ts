@@ -8,6 +8,10 @@ export class NavigationService {
 
   constructor(private router: Router) {}
 
+  navigateToDashboard() {
+    this.router.navigate(['/dashboard']);
+  }
+
   navigateToTransactions() {
     this.router.navigate(['/transactions/new']);
   }
