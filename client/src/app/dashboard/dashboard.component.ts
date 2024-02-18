@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { NavigationService } from '../navigation.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -9,6 +10,12 @@ import { Component } from '@angular/core';
 })
 export class DashboardComponent {
   
+  constructor(public navigationService: NavigationService) {}
+
+  ngOnInit() {
+
+  }
+
   totalIncome = 0;
   totalExpenses = 0;
   cashFlow = 0;
