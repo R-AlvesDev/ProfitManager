@@ -1,1 +1,19 @@
-<p>transaction-list works!</p>
+<table>
+    <thead>
+      <tr>
+        <th>Amount</th>
+        <th>Category</th>
+        <th>Type</th>
+        <th>Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let transaction of transactions">
+        <td>{{ transaction.amount }}</td>
+        <td>{{ transaction.category }}</td>
+        <td>{{ transaction.type }}</td>
+        <td>{{ transaction.date | date }}</td> <!-- Using Angular date pipe for formatting -->
+      </tr>
+    </tbody>
+  </table>
+  <button type="button" (click)="cancel()">Cancel</button>

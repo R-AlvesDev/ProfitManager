@@ -28,11 +28,15 @@ export class TransactionFormComponent {
   }
   onSubmit(): void {
     console.log(this.transactionForm.value);
-    if(this.transactionForm.value.amount && this.transactionForm.value.category && this.transactionForm.value.type){
-      this.transactionService.createTransaction(this.transactionForm.value);
+    
+    if(!this.transactionForm.value.amount && !this.transactionForm.value.category && !this.transactionForm.value.type && !this.transactionForm.value.date){
+      console.error('Error creating transaction: Missing data from transaction');
     }
     else{
-      console.error('Error creating transaction: Missing data from transaction');
+      this.transactionService.createTransaction(this.transactionForm.value).subscribe({
+        next: (res) => console.log('Transaction created', res),
+        error: (err) => console.error('Error creating transaction:', err)
+      });
     }
   }
 }

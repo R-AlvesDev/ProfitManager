@@ -16,6 +16,10 @@ export class NavigationService {
     this.router.navigate(['/transactions/new']);
   }
 
+  navigateToTransactionList() {
+    this.router.navigate(['/transaction-list']);
+  }
+
   // Add other navigation methods as needed
 
 }

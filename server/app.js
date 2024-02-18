@@ -35,9 +35,49 @@ app.post("/transactions", async (req, res) => {
     const newTransaction = new Transaction(req.body);
     await newTransaction.save();
     res.json({ message: "Transaction created successfully" });
+    console.log("Transaction saved successfully");
   } catch (err) {
     console.error("Error creating transaction:", err);
     res.status(500).json({ message: "Error creating transaction" });
+  }
+});
+
+// Endpoint to get total income
+app.get("/transactions/totalIncome", async (req, res) => {
+  try {
+    const totalIncome = await Transaction.aggregate([
+      { $match: { type: "Income" } },
+      { $group: { _id: null, total: { $sum: "$amount" } } }
+    ]);
+    res.json(totalIncome[0]?.total || 0);
+  } catch (err) {
+    console.error("Error fetching total income:", err);
+    res.status(500).json({ message: "Error fetching total income" });
+  }
+});
+
+// Endpoint to get total expenses
+app.get("/transactions/totalExpenses", async (req, res) => {
+  try {
+    const totalExpenses = await Transaction.aggregate([
+      { $match: { type: "Outcome" } },
+      { $group: { _id: null, total: { $sum: "$amount" } } }
+    ]);
+    res.json(totalExpenses[0]?.total || 0);
+  } catch (err) {
+    console.error("Error fetching total expenses:", err);
+    res.status(500).json({ message: "Error fetching total expenses" });
+  }
+});
+
+// Endpoint to get all transactions
+app.get("/transactions", async (req, res) => {
+  try {
+    const transactions = await Transaction.find();
+    res.json(transactions);
+  } catch (err) {
+    console.error("Error fetching transactions:", err);
+    res.status(500).json({ message: "Error fetching transactions" });
   }
 });
 
