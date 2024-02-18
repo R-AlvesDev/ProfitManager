@@ -1,11 +1,15 @@
-// app.js
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const Transaction = require('./transaction.model'); // Adjust path if needed
+const path = require('path');
+const Transaction = require('./transaction.model');
 
 const app = express();
+
+// Serve static files from the Angular app
+const angularAppDirectory = path.join(__dirname, '../client/dist/profit-manager/browser'); // Adjust the path according to your Angular dist directory structure
+app.use(express.static(angularAppDirectory));
 
 // Middleware
 app.use(bodyParser.json());
@@ -21,6 +25,11 @@ mongoose.connect(connectionString, {
 .catch(err => console.error('Error connecting to MongoDB:', err));
 
 // API endpoints
+
+app.get('*', function(req, res) {
+  res.sendFile(path.join(angularAppDirectory, 'index.html'));
+});
+
 app.post('/transactions', async (req, res) => {
   try {
     const newTransaction = new Transaction(req.body);
