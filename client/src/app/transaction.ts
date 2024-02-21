@@ -3,5 +3,5 @@ export interface Transaction {
     amount: number;
     category: string;
     type: string;
-    date: string; // or Date depending on how you handle dates
+    date: string; 
 }

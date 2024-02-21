@@ -1,3 +1,12 @@
+<form [formGroup]="form">
+  <select formControlName="selectedMonth">
+    <option *ngFor="let month of months" [value]="month.value">{{ month.name }}</option>
+  </select>
+
+  <select formControlName="selectedYear">
+    <option *ngFor="let year of years" [value]="year">{{ year }}</option>
+  </select>
+</form>
 <table>
     <thead>
       <tr>
@@ -12,8 +21,8 @@
         <td>{{ transaction.amount }}</td>
         <td>{{ transaction.category }}</td>
         <td>{{ transaction.type }}</td>
-        <td>{{ transaction.date | date }}</td> <!-- Using Angular date pipe for formatting -->
+        <td>{{ transaction.date | date }}</td>
       </tr>
     </tbody>
-  </table>
-  <button type="button" (click)="cancel()">Cancel</button>
+</table>
+<button type="button" (click)="navigationService.navigateToDashboard()">Cancel</button>

@@ -44,9 +44,10 @@ app.post("/transactions", async (req, res) => {
 
 // Endpoint to get total income
 app.get("/transactions/totalIncome", async (req, res) => {
+  const { startDate, endDate } = req.query;
   try {
     const totalIncome = await Transaction.aggregate([
-      { $match: { type: "Income" } },
+      { $match: { type: "Income", date: {$gte: new Date(startDate), $lte: new Date(endDate)}} },
       { $group: { _id: null, total: { $sum: "$amount" } } }
     ]);
     res.json(totalIncome[0]?.total || 0);
@@ -58,15 +59,30 @@ app.get("/transactions/totalIncome", async (req, res) => {
 
 // Endpoint to get total expenses
 app.get("/transactions/totalExpenses", async (req, res) => {
+  const { startDate, endDate } = req.query;
   try {
     const totalExpenses = await Transaction.aggregate([
-      { $match: { type: "Outcome" } },
+      { $match: { type: "Outcome", date: {$gte: new Date(startDate), $lte: new Date(endDate)}} },
       { $group: { _id: null, total: { $sum: "$amount" } } }
     ]);
     res.json(totalExpenses[0]?.total || 0);
   } catch (err) {
     console.error("Error fetching total expenses:", err);
     res.status(500).json({ message: "Error fetching total expenses" });
+  }
+});
+
+// Endpoint to get Transactions by Month
+app.get("/transactions/byMonth", async (req, res) => {
+  const { startDate, endDate } = req.query;
+  try {
+    const transactions = await Transaction.find({
+      date: { $gte: new Date(startDate), $lte: new Date(endDate) }
+    });
+    res.json(transactions);
+  } catch (err) {
+    console.error("Error fetching transactions by month:", err);
+    res.status(500).json({ message: "Error fetching transactions" });
   }
 });
 

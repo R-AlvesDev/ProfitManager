@@ -23,9 +23,6 @@ export class TransactionFormComponent {
     });
   }
 
-  cancel(): void {
-    this.navigationService.navigateToDashboard();
-  }
   onSubmit(): void {
     console.log(this.transactionForm.value);
     
