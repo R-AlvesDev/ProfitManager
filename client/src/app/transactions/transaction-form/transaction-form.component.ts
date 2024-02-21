@@ -3,11 +3,12 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { TransactionService } from '../../transaction.service';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NavigationService } from '../../navigation.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-transaction-form',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, CommonModule],
   templateUrl: './transaction-form.component.html',
   styleUrls: ['./transaction-form.component.css'],
 })
@@ -48,8 +49,6 @@ export class TransactionFormComponent {
       type: '',
       date: '',
     });
-
-    console.log(this.categories);
   }
 
   onSubmit(): void {

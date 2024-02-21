@@ -30,6 +30,7 @@ mongoose
 
 // API endpoints
 
+// Endpoint to get create a transaction
 app.post("/transactions", async (req, res) => {
   try {
     const formattedDate = req.body.date.split('T')[0];
@@ -40,6 +41,20 @@ app.post("/transactions", async (req, res) => {
   } catch (err) {
     console.error("Error creating transaction:", err);
     res.status(500).json({ message: "Error creating transaction" });
+  }
+});
+
+// Endpoint to delete a transaction
+app.delete("/transactions/:id", async (req, res) => {
+  try {
+    const transaction = await Transaction.findByIdAndDelete(req.params.id);
+    if (!transaction) {
+      return res.status(404).json({ message: "Transaction not found" });
+    }
+    res.json({ message: "Transaction deleted successfully" });
+  } catch (err) {
+    console.error("Error deleting transaction:", err);
+    res.status(500).json({ message: "Error deleting transaction" });
   }
 });
 

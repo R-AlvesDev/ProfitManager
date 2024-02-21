@@ -3,12 +3,12 @@ import { NavigationService } from '../../navigation.service';
 import { TransactionService } from '../../transaction.service';
 import { CommonModule } from '@angular/common';
 import { Transaction } from '../../transaction';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-transaction-list',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './transaction-list.component.html',
   styleUrl: './transaction-list.component.css',
 })
@@ -50,7 +50,6 @@ export class TransactionListComponent {
       this.fetchTransactionsForMonth();
     });
     this.fetchTransactionsForMonth();
-    console.log("Log 1" + this.fetchTransactionsForMonth());
   }
 
   populateYears() {
@@ -88,5 +87,23 @@ export class TransactionListComponent {
       .subscribe((transactions: Transaction[]) => {
         this.transactions = transactions;
       });
+  }
+
+  deleteTransaction(transactionId: string) {
+    const isConfirmed = confirm('Are you sure you want to delete this transaction?');
+    if (isConfirmed) {
+      this.transactionService.deleteTransaction(transactionId).subscribe({
+        next: () => {
+          // Handle successful deletion, e.g., refresh the list or show a success message
+          this.fetchTransactionsForMonth(); // Refresh the list to reflect the deletion
+          alert('Transaction deleted successfully!');
+        },
+        error: (error) => {
+          // Handle error
+          console.error('Error deleting transaction:', error);
+          alert('There was an error deleting the transaction.');
+        }
+      });
+    }
   }
 }

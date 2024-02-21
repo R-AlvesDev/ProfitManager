@@ -39,4 +39,8 @@ export class TransactionService {
     const params = new HttpParams().set('month', month).set('year', year);
     return this.http.get<Transaction[]>(this.apiUrl + 'byMonthYear', {params});
   }
+
+  deleteTransaction(transactionId: string): Observable<any> {
+    return this.http.delete(this.apiUrl + transactionId);
+  }
 }

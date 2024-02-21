@@ -10,18 +10,25 @@
 <table>
     <thead>
       <tr>
+        <th></th>
         <th>Amount</th>
         <th>Category</th>
         <th>Type</th>
         <th>Date</th>
+        <th>Options</th>
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let transaction of transactions">
-        <td>{{ transaction.amount }}</td>
+        <td>{{ transaction.type === 'Income' ? '+ ' : '- ' }}{{ transaction.amount }}</td>
         <td>{{ transaction.category }}</td>
         <td>{{ transaction.type }}</td>
         <td>{{ transaction.date | date }}</td>
+        <td>
+          <!--(click)="editTransaction(transaction.id)"-->
+          <button >Edit</button>
+          <button (click)="deleteTransaction(transaction.id)">Delete</button>
+        </td>
       </tr>
     </tbody>
 </table>
