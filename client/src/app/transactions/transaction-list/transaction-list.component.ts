@@ -50,6 +50,7 @@ export class TransactionListComponent {
       this.fetchTransactionsForMonth();
     });
     this.fetchTransactionsForMonth();
+    console.log("Log 1" + this.fetchTransactionsForMonth());
   }
 
   populateYears() {
@@ -63,8 +64,7 @@ export class TransactionListComponent {
   fetchTransactionsForMonth() {
     const month = this.form.get('selectedMonth')?.value;
     const year = this.form.get('selectedYear')?.value;
-    // Assuming getTransactionsByMonthAndYear method exists and is correctly implemented
-    this.transactionService.getTransactionsByMonthAndYear(month + 1, year)
+    this.transactionService.getTransactionsByMonthAndYear(+month + 1, year)
       .subscribe((transactions) => {
         this.transactions = transactions;
       });

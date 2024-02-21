@@ -32,7 +32,8 @@ mongoose
 
 app.post("/transactions", async (req, res) => {
   try {
-    const newTransaction = new Transaction(req.body);
+    const formattedDate = req.body.date.split('T')[0];
+    const newTransaction = new Transaction({...req.body, date: formattedDate});
     await newTransaction.save();
     res.json({ message: "Transaction created successfully" });
     console.log("Transaction saved successfully");
@@ -50,7 +51,7 @@ app.get("/transactions/totalIncome", async (req, res) => {
       { $match: { type: "Income", date: {$gte: new Date(startDate), $lte: new Date(endDate)}} },
       { $group: { _id: null, total: { $sum: "$amount" } } }
     ]);
-    res.json(totalIncome[0]?.total || 0);
+    res.json({ total: totalIncome[0]?.total || 0 });
   } catch (err) {
     console.error("Error fetching total income:", err);
     res.status(500).json({ message: "Error fetching total income" });
@@ -65,7 +66,7 @@ app.get("/transactions/totalExpenses", async (req, res) => {
       { $match: { type: "Outcome", date: {$gte: new Date(startDate), $lte: new Date(endDate)}} },
       { $group: { _id: null, total: { $sum: "$amount" } } }
     ]);
-    res.json(totalExpenses[0]?.total || 0);
+    res.json({ total: totalExpenses[0]?.total || 0 });
   } catch (err) {
     console.error("Error fetching total expenses:", err);
     res.status(500).json({ message: "Error fetching total expenses" });
@@ -82,6 +83,23 @@ app.get("/transactions/byMonth", async (req, res) => {
     res.json(transactions);
   } catch (err) {
     console.error("Error fetching transactions by month:", err);
+    res.status(500).json({ message: "Error fetching transactions" });
+  }
+});
+
+// Endpoint to get Transactions by Month and Year
+app.get('/transactions/byMonthYear', async (req, res) => {
+  const { month, year } = req.query;
+  const startDate = new Date(year, month - 1, 1);
+  const endDate = new Date(year, month, 0); // Last day of the given month
+
+  try {
+    const transactions = await Transaction.find({
+      date: { $gte: startDate, $lte: endDate }
+    });
+    res.json(transactions);
+  } catch (err) {
+    console.error("Error fetching transactions by month and year:", err);
     res.status(500).json({ message: "Error fetching transactions" });
   }
 });

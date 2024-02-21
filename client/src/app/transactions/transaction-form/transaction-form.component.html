@@ -3,7 +3,9 @@
     <p>Amount</p>
     <input type="number" formControlName="amount" min="0">
     <p>Category</p>
-    <input type="text" formControlName="category">
+    <select formControlName="category">
+        <option *ngFor="let category of categories" [value]="category">{{ category }}</option>
+    </select>
     <p>Type</p>
     <select formControlName="type">
         <option value="Income">Income</option>
@@ -14,4 +16,4 @@
     <button type="submit">Submit</button>
 </form>
 
-<button type="button" (click)="this.navigationService.navigateToDashboard()">Cancel</button>
+<button type="button" (click)="this.navigationService.navigateToDashboard()">Back</button>
