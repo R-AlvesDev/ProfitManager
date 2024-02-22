@@ -20,6 +20,8 @@ export class NavigationService {
     this.router.navigate(['/transaction-list']);
   }
 
-  // Add other navigation methods as needed
+  navigateToTransactionEdit(transactionId: string) {
+    this.router.navigate(['/transactions/edit', transactionId]);
+  }
 
 }

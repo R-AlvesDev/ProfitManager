@@ -89,6 +89,10 @@ export class TransactionListComponent {
       });
   }
 
+  editTransaction(transactionId: string) {
+    this.navigationService.navigateToTransactionEdit(transactionId);
+  }
+
   deleteTransaction(transactionId: string) {
     const isConfirmed = confirm('Are you sure you want to delete this transaction?');
     if (isConfirmed) {

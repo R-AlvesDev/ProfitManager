@@ -4,6 +4,7 @@ import { TransactionService } from '../../transaction.service';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NavigationService } from '../../navigation.service';
 import { CommonModule } from '@angular/common';
+import { CategoryService } from '../../category.service';
 
 @Component({
   selector: 'app-transaction-form',
@@ -14,34 +15,13 @@ import { CommonModule } from '@angular/common';
 })
 export class TransactionFormComponent {
   transactionForm: FormGroup;
-  categories: string[] = [
-    'Groceries',
-    'Utilities',
-    'Entertainment',
-    'Healthcare',
-    'Transport',
-    'Rent/Mortgage',
-    'Insurance',
-    'Savings/Investments',
-    'Debt Repayment',
-    'Education',
-    'Dining/Eating Out',
-    'Transportation',
-    'Utilities',
-    'Entertainment',
-    'Clothing',
-    'Healthcare/Medical',
-    'Gifts/Donations',
-    'Personal Care',
-    'Pets',
-    'Home Maintenance/Improvement',
-    'Salary(Income Only)',
-  ];
+  categories: string[] = [];
 
   constructor(
     private formBuilder: FormBuilder,
     private transactionService: TransactionService,
-    public navigationService: NavigationService
+    public navigationService: NavigationService,
+    private categoryService: CategoryService
   ) {
     this.transactionForm = this.formBuilder.group({
       amount: '',
@@ -49,6 +29,7 @@ export class TransactionFormComponent {
       type: '',
       date: '',
     });
+    this.categories = this.categoryService.getCategories();
   }
 
   onSubmit(): void {

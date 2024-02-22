@@ -40,6 +40,14 @@ export class TransactionService {
     return this.http.get<Transaction[]>(this.apiUrl + 'byMonthYear', {params});
   }
 
+  getTransactionById(transactionId: string) {
+    return this.http.get<Transaction>(this.apiUrl + transactionId);
+  }
+
+  updateTransaction(transactionId: string, transactionData: any): Observable<any> {
+    return this.http.put(this.apiUrl + transactionId, transactionData);
+  }
+
   deleteTransaction(transactionId: string): Observable<any> {
     return this.http.delete(this.apiUrl + transactionId);
   }

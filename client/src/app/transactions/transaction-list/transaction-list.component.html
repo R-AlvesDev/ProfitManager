@@ -25,8 +25,8 @@
         <td>{{ transaction.type }}</td>
         <td>{{ transaction.date | date }}</td>
         <td>
-          <!--(click)="editTransaction(transaction.id)"-->
-          <button >Edit</button>
+          
+          <button (click)="editTransaction(transaction.id)">Edit</button>
           <button (click)="deleteTransaction(transaction.id)">Delete</button>
         </td>
       </tr>

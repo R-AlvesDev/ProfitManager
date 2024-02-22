@@ -1,1 +1,19 @@
-<p>transaction-edit works!</p>
+<h1>Edit Transaction</h1>
+<form [formGroup]="transactionForm" (ngSubmit)="onSubmit()">
+    <p>Amount</p>
+    <input type="number" formControlName="amount" min="0">
+    <p>Category</p>
+    <select formControlName="category">
+        <option *ngFor="let category of categories" [value]="category">{{ category }}</option>
+    </select>
+    <p>Type</p>
+    <select formControlName="type">
+        <option value="Income">Income</option>
+        <option value="Outcome">Outcome</option>
+    </select>
+    <p>Date</p>
+    <input type="date" formControlName="date">
+    <button type="submit">Update</button>
+</form>
+
+<button type="button" (click)="this.navigationService.navigateToDashboard()">Back</button>
