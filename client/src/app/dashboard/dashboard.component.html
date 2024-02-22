@@ -1,8 +1,11 @@
 <h2>Dashboard</h2>
-<h3>{{currentMonthName}}'s Numbers</h3>
+<h3>{{currentMonthName}}</h3>
 <p>{{today | date: 'fullDate'}}</p>
 <p>Total Income: {{ totalIncome }}</p>
 <p>Total Expenses: {{ totalExpenses }}</p>
 <p>Cash Flow: {{ cashFlow }}</p>
-<button type="button" (click)="navigationService.navigateToTransactions()">Add Transaction</button>
-<button type="button" (click)="navigationService.navigateToTransactionList()">View Transactions</button>
+<div>
+    <button type="button" (click)="navigationService.navigateToTransactions()">Add Transaction</button>
+    <button type="button" (click)="navigationService.navigateToTransactionList()">View Transactions</button>
+</div>
+<app-spending-pie-chart></app-spending-pie-chart>

@@ -118,6 +118,26 @@ app.get("/transactions/byMonthYear", async (req, res) => {
   }
 });
 
+// Endpoint to get spending by Category
+app.get('/transactions/spendingByCategory', async (req, res) => {
+  try {
+    const spendingByCategory = await Transaction.aggregate([
+      { $match: { type: 'Outcome' } }, // Filter for transactions with type 'Outcome'
+      { $group: {
+          _id: '$category',
+          total: { $sum: '$amount' }
+        }
+      }
+    ]);
+    res.json(spendingByCategory.map(item => {
+      return { category: item._id, total: item.total };
+    }));
+  } catch (err) {
+    console.error("Error fetching spending by category:", err);
+    res.status(500).json({ message: "Error fetching data" });
+  }
+});
+
 // Endpoint to get all transactions
 app.get("/transactions", async (req, res) => {
   try {
@@ -140,6 +160,20 @@ app.get("/transactions/:id", async (req, res) => {
   } catch (err) {
     console.error("Error fetching transaction:", err);
     res.status(500).json({ message: "Error fetching transaction" });
+  }
+});
+
+// Endpoint to update a transaction
+app.put('/transactions/:id', async (req, res) => {
+  try {
+    const updatedTransaction = await Transaction.findByIdAndUpdate(req.params.id, req.body, {new: true});
+    if (!updatedTransaction) {
+      return res.status(404).json({ message: "Transaction not found" });
+    }
+    res.json(updatedTransaction);
+  } catch (err) {
+    console.error("Error updating transaction:", err);
+    res.status(500).json({ message: "Error updating transaction" });
   }
 });
 

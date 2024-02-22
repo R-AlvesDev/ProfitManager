@@ -44,6 +44,10 @@ export class TransactionService {
     return this.http.get<Transaction>(this.apiUrl + transactionId);
   }
 
+  getSpendingByCategory(): Observable<any> {
+    return this.http.get(this.apiUrl + 'spendingByCategory');
+  }
+
   updateTransaction(transactionId: string, transactionData: any): Observable<any> {
     return this.http.put(this.apiUrl + transactionId, transactionData);
   }

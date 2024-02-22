@@ -1,5 +1,5 @@
 <h1>Edit Transaction</h1>
-<form [formGroup]="transactionForm" (ngSubmit)="onSubmit()">
+<form [formGroup]="transactionForm">
     <p>Amount</p>
     <input type="number" formControlName="amount" min="0">
     <p>Category</p>
@@ -13,7 +13,8 @@
     </select>
     <p>Date</p>
     <input type="date" formControlName="date">
-    <button type="submit">Update</button>
 </form>
-
-<button type="button" (click)="this.navigationService.navigateToDashboard()">Back</button>
+<div>
+    <button type="submit" (click)="onSubmit()">Update</button>
+    <button type="button" (click)="this.navigationService.navigateToDashboard()">Back</button>
+</div>

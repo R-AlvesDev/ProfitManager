@@ -3,13 +3,15 @@ import { NavigationService } from '../navigation.service';
 import { TransactionService } from '../transaction.service';
 import { TotalResponse } from '../total-response';
 import { CommonModule } from '@angular/common';
+import { SpendingPieChartComponent } from "../spending-pie-chart/spending-pie-chart.component";
+import { NgChartsModule } from 'ng2-charts';
 
 @Component({
-  selector: 'app-dashboard',
-  standalone: true,
-  imports: [CommonModule],
-  templateUrl: './dashboard.component.html',
-  styleUrl: './dashboard.component.css',
+    selector: 'app-dashboard',
+    standalone: true,
+    templateUrl: './dashboard.component.html',
+    styleUrl: './dashboard.component.css',
+    imports: [CommonModule, SpendingPieChartComponent, NgChartsModule]
 })
 export class DashboardComponent {
 
