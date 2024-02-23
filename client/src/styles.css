@@ -13,12 +13,19 @@
     color: #333;
     background-color: #f4f4f4;
   }
+
+  .pieChart{
+    width: 400px !important;
+    height: 400px !important;
+  }
   
   /* Container for centering content */
   .container {
     width: 80%;
     margin: auto;
     overflow: hidden;
+    text-align: center;
+    align-items: center !important;
   }
   
   /* Basic Button Styling */
