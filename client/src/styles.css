@@ -1,63 +1,95 @@
+.sidenav-container {
+  height: 100%;
+}
+
+.mat-toolbar {
+  display: flex;
+  justify-content: space-between;
+}
+
+.example-spacer {
+  flex: 1 1 auto;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  background-color: #f4f4f4;
+}
+
+.footer-content-right {
+  margin-right: 20px;
+}
 
 /* Basic Reset */
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-  
-  /* Body Styling */
-  body {
-    font-family: 'Arial', sans-serif;
-    line-height: 1.6;
-    color: #333;
-    background-color: #f4f4f4;
-  }
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-  .pieChart{
-    width: 400px !important;
-    height: 400px !important;
-  }
-  
-  /* Container for centering content */
-  .container {
-    width: 80%;
-    margin: auto;
-    overflow: hidden;
-    text-align: center;
-    align-items: center !important;
-  }
-  
-  /* Basic Button Styling */
-  button {
-    display: inline-block;
-    border: none;
-    background-color: #007bff;
-    color: #ffffff;
-    padding: 10px 20px;
-    cursor: pointer;
-    border-radius: 5px;
-    margin: 10px;
-  }
-  
-  button:hover {
-    background-color: #0056b3;
-  }
-  
-  /* Table Styling */
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-  }
-  
-  th, td {
-    padding: 10px;
-    border: 1px solid #ccc;
-    text-align: center;
-  }
-  
-  th {
-    background-color: #007bff;
-    color: #ffffff;
-  }
+/* Body Styling */
+body {
+  font-family: "Arial", sans-serif;
+  line-height: 1.6;
+  color: #333;
+  background-color: #f4f4f4;
+}
+
+.pieChart {
+  width: 400px !important;
+  height: 400px !important;
+}
+
+/* Container for centering content */
+.container {
+  width: 80%;
+  margin: auto;
+  overflow: hidden;
+  text-align: center;
+  align-items: center !important;
+}
+
+/* Basic Button Styling */
+button {
+  display: inline-block;
+  border: none;
+  background-color: #007bff;
+  color: #ffffff;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 5px;
+  margin: 10px;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+/* Table Styling */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+th,
+td {
+  padding: 10px;
+  border: 1px solid #ccc;
+  text-align: center;
+}
+
+th {
+  background-color: #007bff;
+  color: #ffffff;
+}
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}

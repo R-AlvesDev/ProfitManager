@@ -12,6 +12,14 @@ export class NavigationService {
     this.router.navigate(['/dashboard']);
   }
 
+  navigateToLogin(){
+    this.router.navigate(['/login']);
+  }
+
+  navigateToRegistration(){
+    this.router.navigate(['/register']);
+  }
+
   navigateToTransactions() {
     this.router.navigate(['/transactions/new']);
   }

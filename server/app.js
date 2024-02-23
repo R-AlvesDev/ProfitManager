@@ -4,8 +4,10 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const path = require("path");
 const Transaction = require("./transaction.model");
-
+const User = require('./user.model');
+const jwt = require('jsonwebtoken');
 const app = express();
+require('dotenv').config();
 
 // Serve static files from the Angular app
 const angularAppDirectory = path.join(
@@ -29,6 +31,32 @@ mongoose
   .catch((err) => console.error("Error connecting to MongoDB:", err));
 
 // API endpoints
+
+// Endpoint for User Registration
+app.post('/register', async (req, res) => {
+  try {
+    const user = new User(req.body);
+    await user.save();
+    res.status(201).send({ message: "User created successfully" });
+  } catch (error) {
+    res.status(400).send(error);
+  }
+});
+
+// Endpoint for User Login
+app.post('/login', async (req, res) => {
+  try {
+    const user = await User.findOne({ email: req.body.email });
+    if (!user || !(await user.comparePassword(req.body.password))) {
+      return res.status(401).send({ message: "Authentication failed" });
+    }
+
+    const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, { expiresIn: '24h' });
+    res.send({ user, token });
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
 
 // Endpoint to get create a transaction
 app.post("/transactions", async (req, res) => {
