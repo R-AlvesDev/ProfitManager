@@ -5,13 +5,15 @@ import { TotalResponse } from '../total-response';
 import { CommonModule } from '@angular/common';
 import { SpendingPieChartComponent } from "../spending-pie-chart/spending-pie-chart.component";
 import { NgChartsModule } from 'ng2-charts';
+import { LoginComponent } from "../login/login.component";
+import { AuthService } from '../auth.service';
 
 @Component({
     selector: 'app-dashboard',
     standalone: true,
     templateUrl: './dashboard.component.html',
     styleUrl: './dashboard.component.css',
-    imports: [CommonModule, SpendingPieChartComponent, NgChartsModule]
+    imports: [CommonModule, SpendingPieChartComponent, NgChartsModule, LoginComponent]
 })
 export class DashboardComponent {
 
@@ -25,7 +27,8 @@ export class DashboardComponent {
 
   constructor(
     public navigationService: NavigationService,
-    private transactionService: TransactionService
+    private transactionService: TransactionService,
+    private authService: AuthService
   ) {}
   ngOnInit() {
     this.fetchDataForCurrentMonth();
@@ -61,5 +64,9 @@ export class DashboardComponent {
 
   updateCashFlow() {
     this.cashFlow = this.totalIncome - this.totalExpenses;
+  }
+
+  isLoggedIn(): boolean {
+    return this.authService.currentUserValue !== null;
   }
 }

@@ -1,3 +1,8 @@
+<ng-container *ngIf="!isLoggedIn">
+  <div class="login-overlay">
+    <app-login></app-login>
+  </div>
+</ng-container>
 <div class="dashboard-header">
     <h2>Dashboard</h2>
     <p>{{today | date: 'fullDate'}}</p>

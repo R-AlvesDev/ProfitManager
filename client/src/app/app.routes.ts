@@ -6,14 +6,16 @@ import { TransactionListComponent } from './transactions/transaction-list/transa
 import { TransactionEditComponent } from './transactions/transaction-edit/transaction-edit.component';
 import { LoginComponent } from './login/login.component';
 import { RegistrationComponent } from './registration/registration.component';
+import { AuthGuardService } from './auth-guard.service';
 
 export const routes: Routes = [
-  { path: 'dashboard', component: DashboardComponent }, // Dashboard as default route
+  { path: 'dashboard', component: DashboardComponent /*, canActivate: [AuthGuardService]*/}, // Dashboard as default route
   { path: 'transactions/new', component: TransactionFormComponent }, // Route for transaction form
   { path: 'transaction-list', component: TransactionListComponent}, // Route for transaction list
   { path: 'transactions/edit/:id', component: TransactionEditComponent }, // Route for transaction edit form
   { path: 'login', component: LoginComponent }, // Route for login form
-  { path: 'register', component: RegistrationComponent } // Route for registration form
+  { path: 'register', component: RegistrationComponent }, // Route for registration form
+  { path: '', redirectTo: '/dashboard', pathMatch: 'full' }
 ];
 
 @NgModule({
