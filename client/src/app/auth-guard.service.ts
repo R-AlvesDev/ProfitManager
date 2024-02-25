@@ -20,10 +20,10 @@ export class AuthGuardService {
     state: RouterStateSnapshot
   ): boolean | UrlTree | Observable<boolean | UrlTree> | Promise<boolean | UrlTree> => {
     const currentUser = this.authService.currentUserValue;
-    if (currentUser) {
+    if (currentUser || this.authService.isGuestMode()) {
       return true;
     }
-    // Redirect to login page and return a UrlTree
-    return this.router.createUrlTree(['/login'], { queryParams: { returnUrl: state.url } });
+    // Redirect to welcome page and return a UrlTree
+    return this.router.createUrlTree(['/welcome']);
   };
 }

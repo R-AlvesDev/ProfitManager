@@ -2,29 +2,6 @@
   height: 100%;
 }
 
-/* Overlay Styling for login */
-.login-overlay {
-    position: fixed; /* or absolute, depending on your layout */
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000; /* Ensure it's above other content */
-  }
-  
-  .login-container {
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    width: fit-content;
-    /* Additional styles to center the box if not using flexbox in .login-overlay */
-  }
-
 .mat-toolbar {
   display: flex;
   justify-content: space-between;

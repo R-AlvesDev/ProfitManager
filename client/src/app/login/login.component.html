@@ -1,19 +1,22 @@
-<div class="login-overlay">
-    <div class="login-container">
-    <h2>Login</h2>
-    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-      <div class="form-group">
-        <label for="email">Email:</label>
-        <input type="email" id="email" formControlName="email" required>
-      </div>
-      <div class="form-group">
-        <label for="password">Password:</label>
-        <input type="password" id="password" formControlName="password" required>
-      </div>
-      <button type="submit" [disabled]="loginForm.invalid">Login</button>
-      <!-- Button for continuing as a guest -->
-      <button type="button" (click)="continueAsGuest()">Continue as Guest</button>
-    </form>
-    <p>Don't have an account? <a routerLink="/register">Register here</a></p>
-  </div>
+<div>
+  <h2>Login</h2>
+  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="email">Email:</label>
+      <input type="email" id="email" formControlName="email" required />
+    </div>
+    <div class="form-group">
+      <label for="password">Password:</label>
+      <input
+        type="password"
+        id="password"
+        formControlName="password"
+        required
+      />
+    </div>
+    <button type="submit" [disabled]="loginForm.invalid">Login</button>
+    <button type="button" (click)="navigationService.navigateToWelcome()">
+      Back
+    </button>
+  </form>
 </div>

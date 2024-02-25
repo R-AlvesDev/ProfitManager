@@ -23,7 +23,6 @@ export class RegistrationComponent {
     public navigationService: NavigationService
   ) {
     this.registrationForm = this.formBuilder.group({
-      username: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
     });
@@ -35,7 +34,7 @@ export class RegistrationComponent {
     }
 
     this.loading = true;
-    this.authService.register(this.registrationForm.value.username, this.registrationForm.value.email, this.registrationForm.value.password).subscribe({
+    this.authService.register(this.registrationForm.value.email, this.registrationForm.value.password).subscribe({
       next: () => {
         this.loading = false;
         // Navigate to login or dashboard as appropriate

@@ -8,6 +8,9 @@ export class NavigationService {
 
   constructor(private router: Router) {}
 
+  navigateToWelcome() {
+    this.router.navigate(['/welcome']);
+  }
   navigateToDashboard() {
     this.router.navigate(['/dashboard']);
   }

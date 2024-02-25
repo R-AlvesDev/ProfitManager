@@ -1,13 +1,15 @@
 const express = require("express");
+const session = require("express-session");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const path = require("path");
 const Transaction = require("./transaction.model");
-const User = require('./user.model');
-const jwt = require('jsonwebtoken');
+const User = require("./user.model");
+const jwt = require("jsonwebtoken");
 const app = express();
-require('dotenv').config();
+const { authenticateToken } = require('./middleware');
+require("dotenv").config();
 
 // Serve static files from the Angular app
 const angularAppDirectory = path.join(
@@ -32,8 +34,24 @@ mongoose
 
 // API endpoints
 
+// Session-based authentication routes
+app.post('/login', (req, res) => {
+  // Authenticate the user, then:
+  req.session.user = user;
+  res.redirect('/');
+});
+
+app.use((req, res, next) => {
+  if (!req.session.user) {
+    res.redirect('/login');
+  } else {
+    req.user = req.session.user;
+    next();
+  }
+});
+
 // Endpoint for User Registration
-app.post('/register', async (req, res) => {
+app.post("/register", async (req, res) => {
   try {
     const user = new User(req.body);
     await user.save();
@@ -44,27 +62,31 @@ app.post('/register', async (req, res) => {
 });
 
 // Endpoint for User Login
-app.post('/login', async (req, res) => {
+app.post("/login", async (req, res) => {
   try {
     const user = await User.findOne({ email: req.body.email });
     if (!user || !(await user.comparePassword(req.body.password))) {
       return res.status(401).send({ message: "Authentication failed" });
     }
 
-    const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, { expiresIn: '24h' });
+    const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "24h",
+    });
     res.send({ user, token });
   } catch (error) {
+    console.log("Error logging in:", error);
     res.status(500).send(error);
   }
 });
 
 // Endpoint to get create a transaction
-app.post("/transactions", async (req, res) => {
+app.post("/transactions", authenticateToken, async (req, res) => {
   try {
     const formattedDate = req.body.date.split("T")[0];
     const newTransaction = new Transaction({
       ...req.body,
       date: formattedDate,
+      userId: req.user._id,
     });
     await newTransaction.save();
     res.json({ message: "Transaction created successfully" });
@@ -76,18 +98,25 @@ app.post("/transactions", async (req, res) => {
 });
 
 // Endpoint to get total income
-app.get("/transactions/totalIncome", async (req, res) => {
+app.get("/transactions/totalIncome", authenticateToken, async (req, res) => {
   const { startDate, endDate } = req.query;
   try {
+    if (!mongoose.Types.ObjectId.isValid(req.user._id)) {
+      return res.status(400).json({ message: "Invalid user ID" });
+    }
+    console.log('startDate:', startDate);
+console.log('endDate:', endDate);
+console.log('userId:', req.user._id);
     const totalIncome = await Transaction.aggregate([
       {
         $match: {
           type: "Income",
           date: { $gte: new Date(startDate), $lte: new Date(endDate) },
+          userId: req.user._id,
         },
       },
       { $group: { _id: null, total: { $sum: "$amount" } } },
-    ]);
+    ])
     res.json({ total: totalIncome[0]?.total || 0 });
   } catch (err) {
     console.error("Error fetching total income:", err);
@@ -96,18 +125,22 @@ app.get("/transactions/totalIncome", async (req, res) => {
 });
 
 // Endpoint to get total expenses
-app.get("/transactions/totalExpenses", async (req, res) => {
+app.get("/transactions/totalExpenses", authenticateToken, async (req, res) => {
   const { startDate, endDate } = req.query;
   try {
+    if (!mongoose.Types.ObjectId.isValid(req.user._id)) {
+      return res.status(400).json({ message: "Invalid user ID" });
+    }
     const totalExpenses = await Transaction.aggregate([
       {
         $match: {
           type: "Outcome",
           date: { $gte: new Date(startDate), $lte: new Date(endDate) },
+          userId: req.user._id,
         },
       },
       { $group: { _id: null, total: { $sum: "$amount" } } },
-    ]);
+    ])
     res.json({ total: totalExpenses[0]?.total || 0 });
   } catch (err) {
     console.error("Error fetching total expenses:", err);
@@ -116,11 +149,12 @@ app.get("/transactions/totalExpenses", async (req, res) => {
 });
 
 // Endpoint to get Transactions by Month
-app.get("/transactions/byMonth", async (req, res) => {
+app.get("/transactions/byMonth", authenticateToken, async (req, res) => {
   const { startDate, endDate } = req.query;
   try {
     const transactions = await Transaction.find({
       date: { $gte: new Date(startDate), $lte: new Date(endDate) },
+      userId: req.user._id,
     });
     res.json(transactions);
   } catch (err) {
@@ -130,7 +164,7 @@ app.get("/transactions/byMonth", async (req, res) => {
 });
 
 // Endpoint to get Transactions by Month and Year
-app.get("/transactions/byMonthYear", async (req, res) => {
+app.get("/transactions/byMonthYear", authenticateToken, async (req, res) => {
   const { month, year } = req.query;
   const startDate = new Date(year, month - 1, 1);
   const endDate = new Date(year, month, 0); // Last day of the given month
@@ -138,6 +172,7 @@ app.get("/transactions/byMonthYear", async (req, res) => {
   try {
     const transactions = await Transaction.find({
       date: { $gte: startDate, $lte: endDate },
+      userId: req.user._id,
     });
     res.json(transactions);
   } catch (err) {
@@ -147,19 +182,26 @@ app.get("/transactions/byMonthYear", async (req, res) => {
 });
 
 // Endpoint to get spending by Category
-app.get('/transactions/spendingByCategory', async (req, res) => {
+app.get("/transactions/spendingByCategory", authenticateToken, async (req, res) => {
   try {
+    if (!mongoose.Types.ObjectId.isValid(req.user._id)) {
+      return res.status(400).json({ message: "Invalid user ID" });
+    }
     const spendingByCategory = await Transaction.aggregate([
-      { $match: { type: 'Outcome' } }, // Filter for transactions with type 'Outcome'
-      { $group: {
-          _id: '$category',
-          total: { $sum: '$amount' }
-        }
-      }
-    ]);
-    res.json(spendingByCategory.map(item => {
-      return { category: item._id, total: item.total };
-    }));
+      { $match: { type: "Outcome" } }, // Filter for transactions with type 'Outcome'
+      {
+        $group: {
+          _id: "$category",
+          total: { $sum: "$amount" },
+          userId: req.user._id,
+        },
+      },
+    ])
+    res.json(
+      spendingByCategory.map((item) => {
+        return { category: item._id, total: item.total };
+      })
+    );
   } catch (err) {
     console.error("Error fetching spending by category:", err);
     res.status(500).json({ message: "Error fetching data" });
@@ -167,9 +209,9 @@ app.get('/transactions/spendingByCategory', async (req, res) => {
 });
 
 // Endpoint to get all transactions
-app.get("/transactions", async (req, res) => {
+app.get("/transactions", authenticateToken, async (req, res) => {
   try {
-    const transactions = await Transaction.find();
+    const transactions = await Transaction.find({ userId: req.user._id });
     res.json(transactions);
   } catch (err) {
     console.error("Error fetching transactions:", err);
@@ -178,9 +220,11 @@ app.get("/transactions", async (req, res) => {
 });
 
 // Endpoint to get transaction by id
-app.get("/transactions/:id", async (req, res) => {
+app.get("/transactions/:id", authenticateToken, async (req, res) => {
   try {
-    const transaction = await Transaction.findById(req.params.id);
+    const transaction = await Transaction.findById(req.params.id).find({
+      userId: req.user._id,
+    });
     if (!transaction) {
       return res.status(404).json({ message: "Transaction not found" });
     }
@@ -192,9 +236,13 @@ app.get("/transactions/:id", async (req, res) => {
 });
 
 // Endpoint to update a transaction
-app.put('/transactions/:id', async (req, res) => {
+app.put("/transactions/:id", authenticateToken, async (req, res) => {
   try {
-    const updatedTransaction = await Transaction.findByIdAndUpdate(req.params.id, req.body, {new: true});
+    const updatedTransaction = await Transaction.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    ).find({ userId: req.user._id });
     if (!updatedTransaction) {
       return res.status(404).json({ message: "Transaction not found" });
     }
@@ -206,7 +254,7 @@ app.put('/transactions/:id', async (req, res) => {
 });
 
 // Endpoint to delete a transaction
-app.delete("/transactions/:id", async (req, res) => {
+app.delete("/transactions/:id", authenticateToken, async (req, res) => {
   try {
     const transaction = await Transaction.findByIdAndDelete(req.params.id);
     if (!transaction) {

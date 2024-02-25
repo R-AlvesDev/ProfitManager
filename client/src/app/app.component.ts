@@ -8,7 +8,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { AuthService } from './auth.service';
 import { NavigationService } from './navigation.service';
-import { GuestService } from './guest.service';
 
 @Component({
   selector: 'app-root',
@@ -30,15 +29,14 @@ export class AppComponent {
 
   constructor(
     private authService: AuthService,
-    public navigationService: NavigationService,
-    private guestService: GuestService
+    public navigationService: NavigationService
   ) {}
 
   ngOnInit() {
-    if (this.authService.currentUserValue) {
+    if (this.authService.currentUserValue || this.authService.isGuestMode()) {
       this.navigationService.navigateToDashboard();
     } else {
-      this.navigationService.navigateToDashboard();
+      this.navigationService.navigateToWelcome();
     }
   }
 }

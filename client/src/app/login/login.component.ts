@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../auth.service';
-import { GuestService } from '../guest.service';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { NavigationService } from '../navigation.service';
@@ -16,9 +15,9 @@ import { NavigationService } from '../navigation.service';
 export class LoginComponent {
   loginForm: FormGroup;
 
-  constructor(private formBuilder: FormBuilder, private authService: AuthService, private guestService: GuestService, private router: Router, public navigationService: NavigationService) {
+  constructor(private formBuilder: FormBuilder, private authService: AuthService, private router: Router, public navigationService: NavigationService) {
     this.loginForm = this.formBuilder.group({
-      username: '',
+      email: '',
       password: ''
     });
   }
@@ -28,8 +27,8 @@ export class LoginComponent {
       return; // Optionally, handle form validation feedback
     }
   
-    const { username, password } = this.loginForm.value;
-    this.authService.login(username, password).subscribe({
+    const { email, password } = this.loginForm.value;
+    this.authService.login(email, password).subscribe({
       next: (data) => {
         // Handle successful login, e.g., navigate to the dashboard
         this.navigationService.navigateToDashboard();
@@ -39,15 +38,6 @@ export class LoginComponent {
         console.error('Login failed: ', error);
       }
     });
-  }
-
-  onLogin(): void {
-    // Use AuthService to authenticate
-  }
-
-  continueAsGuest(): void {
-    this.guestService.setIsGuest(true);
-    this.navigationService.navigateToDashboard(); // Navigate to a guest-appropriate area
   }
 
 }
