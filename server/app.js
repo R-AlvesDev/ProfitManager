@@ -1,5 +1,4 @@
 const express = require("express");
-const session = require("express-session");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const bodyParser = require("body-parser");
@@ -8,7 +7,7 @@ const Transaction = require("./transaction.model");
 const User = require("./user.model");
 const jwt = require("jsonwebtoken");
 const app = express();
-const { authenticateToken } = require('./middleware');
+const { authenticateToken } = require("./middleware");
 require("dotenv").config();
 
 // Serve static files from the Angular app
@@ -33,22 +32,6 @@ mongoose
   .catch((err) => console.error("Error connecting to MongoDB:", err));
 
 // API endpoints
-
-// Session-based authentication routes
-app.post('/login', (req, res) => {
-  // Authenticate the user, then:
-  req.session.user = user;
-  res.redirect('/');
-});
-
-app.use((req, res, next) => {
-  if (!req.session.user) {
-    res.redirect('/login');
-  } else {
-    req.user = req.session.user;
-    next();
-  }
-});
 
 // Endpoint for User Registration
 app.post("/register", async (req, res) => {
@@ -104,9 +87,9 @@ app.get("/transactions/totalIncome", authenticateToken, async (req, res) => {
     if (!mongoose.Types.ObjectId.isValid(req.user._id)) {
       return res.status(400).json({ message: "Invalid user ID" });
     }
-    console.log('startDate:', startDate);
-console.log('endDate:', endDate);
-console.log('userId:', req.user._id);
+    console.log("startDate:", startDate);
+    console.log("endDate:", endDate);
+    console.log("userId:", req.user._id);
     const totalIncome = await Transaction.aggregate([
       {
         $match: {
@@ -116,7 +99,8 @@ console.log('userId:', req.user._id);
         },
       },
       { $group: { _id: null, total: { $sum: "$amount" } } },
-    ])
+    ]);
+    console.log("totalIncome:", totalIncome);
     res.json({ total: totalIncome[0]?.total || 0 });
   } catch (err) {
     console.error("Error fetching total income:", err);
@@ -140,7 +124,7 @@ app.get("/transactions/totalExpenses", authenticateToken, async (req, res) => {
         },
       },
       { $group: { _id: null, total: { $sum: "$amount" } } },
-    ])
+    ]);
     res.json({ total: totalExpenses[0]?.total || 0 });
   } catch (err) {
     console.error("Error fetching total expenses:", err);
@@ -182,31 +166,35 @@ app.get("/transactions/byMonthYear", authenticateToken, async (req, res) => {
 });
 
 // Endpoint to get spending by Category
-app.get("/transactions/spendingByCategory", authenticateToken, async (req, res) => {
-  try {
-    if (!mongoose.Types.ObjectId.isValid(req.user._id)) {
-      return res.status(400).json({ message: "Invalid user ID" });
-    }
-    const spendingByCategory = await Transaction.aggregate([
-      { $match: { type: "Outcome" } }, // Filter for transactions with type 'Outcome'
-      {
-        $group: {
-          _id: "$category",
-          total: { $sum: "$amount" },
-          userId: req.user._id,
+app.get(
+  "/transactions/spendingByCategory",
+  authenticateToken,
+  async (req, res) => {
+    try {
+      if (!mongoose.Types.ObjectId.isValid(req.user._id)) {
+        return res.status(400).json({ message: "Invalid user ID" });
+      }
+      const spendingByCategory = await Transaction.aggregate([
+        { $match: { type: "Outcome" } }, // Filter for transactions with type 'Outcome'
+        {
+          $group: {
+            _id: "$category",
+            total: { $sum: "$amount" },
+            userId: req.user._id,
+          },
         },
-      },
-    ])
-    res.json(
-      spendingByCategory.map((item) => {
-        return { category: item._id, total: item.total };
-      })
-    );
-  } catch (err) {
-    console.error("Error fetching spending by category:", err);
-    res.status(500).json({ message: "Error fetching data" });
+      ]);
+      res.json(
+        spendingByCategory.map((item) => {
+          return { category: item._id, total: item.total };
+        })
+      );
+    } catch (err) {
+      console.error("Error fetching spending by category:", err);
+      res.status(500).json({ message: "Error fetching data" });
+    }
   }
-});
+);
 
 // Endpoint to get all transactions
 app.get("/transactions", authenticateToken, async (req, res) => {
