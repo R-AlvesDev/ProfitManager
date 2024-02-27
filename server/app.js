@@ -221,14 +221,20 @@ app.get(
         return res.status(400).json({ message: "Invalid user ID" });
       }
       const spendingByCategory = await Transaction.aggregate([
-        { $match: { type: "Outcome" } }, // Filter for transactions with type 'Outcome'
+        {
+          $match: {
+            userId: new mongoose.Types.ObjectId(req.user._id),
+            type: 'expense'
+          }
+        },
         {
           $group: {
-            _id: "$category",
-            total: { $sum: "$amount" },
-            userId: req.user._id,
-          },
-        },
+            _id: '$category',
+            total: {
+              $sum: '$amount'
+            }
+          }
+        }
       ]);
       res.json(
         spendingByCategory.map((item) => {

@@ -1,10 +1,11 @@
 <mat-sidenav-container class="sidenav-container">
     <mat-sidenav #drawer mode="over">
       <mat-nav-list>
-        <a mat-list-item routerLink="/dashboard">Dashboard</a>
-        <a mat-list-item routerLink="/transactions/new">Add Transaction</a>
-        <a mat-list-item routerLink="/transaction-list">View Transactions</a>
-        <a mat-list-item routerLink="/welcome">Logout</a>
+        <a mat-list-item (click)="navigationService.navigateToDashboard()">Dashboard</a>
+        <a mat-list-item (click)="navigationService.navigateToTransactions()">Add Transaction</a>
+        <a mat-list-item (click)="navigationService.navigateToTransactionList()">View Transactions</a>
+        <a mat-list-item (click)="navigationService.navigateToStatistics()">View Statistics</a>
+        <a mat-list-item (click)="navigationService.navigateToWelcome()">Logout</a>
       </mat-nav-list>
     </mat-sidenav>
     <mat-sidenav-content>
@@ -14,14 +15,14 @@
         </button>
         <span>ProfitManager</span>
         <span class="example-spacer"></span>
-        <span>User Name</span>
+        
       </mat-toolbar>
       <div class="container">
           <router-outlet></router-outlet>
       </div>
       <footer class="footer">
         <button mat-button routerLink="/settings">Settings</button>
-        <span class="footer-content-right">Contact Info</span>
+        <button mat-button class="footer-content-right"routerLink="/contact-info">Contact Info</button>
       </footer>
     </mat-sidenav-content>
   </mat-sidenav-container>

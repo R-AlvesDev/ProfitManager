@@ -9,6 +9,7 @@ import { MatListModule } from '@angular/material/list';
 import { AuthService } from './auth.service';
 import { NavigationService } from './navigation.service';
 
+
 @Component({
   selector: 'app-root',
   standalone: true,

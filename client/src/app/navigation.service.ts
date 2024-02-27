@@ -35,4 +35,8 @@ export class NavigationService {
     this.router.navigate(['/transactions/edit', transactionId]);
   }
 
+  navigateToStatistics() {
+    this.router.navigate(['/statistics']);
+  }
+
 }
