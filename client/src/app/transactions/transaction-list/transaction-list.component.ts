@@ -36,7 +36,7 @@ export class TransactionListComponent {
   constructor(
     public navigationService: NavigationService,
     private transactionService: TransactionService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
   ) {
     this.form = this.fb.group({
       selectedMonth: [new Date().getMonth()],

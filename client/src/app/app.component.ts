@@ -32,10 +32,30 @@ export class AppComponent {
     public navigationService: NavigationService
   ) {}
 
-  ngOnInit() {
+/*   ngOnInit() {
     if (this.authService.currentUserValue || this.authService.isGuestMode()) {
       this.navigationService.navigateToDashboard();
     } else {
+      this.navigationService.navigateToWelcome();
+    }
+  } */
+
+  ngOnInit() {
+    if (this.authService.refreshToken) {
+      this.authService.refreshAccessToken().subscribe({
+        next: () => {
+          if (this.authService.currentUserValue || this.authService.isGuestMode()) {
+            this.navigationService.navigateToDashboard();
+          }
+        },
+        error: error => {
+          console.error('Error:', error);
+          // If the refresh token is not valid, navigate to the welcome page
+          this.navigationService.navigateToWelcome();
+        }
+      });
+    } else {
+      // If there's no refresh token, navigate to the welcome page
       this.navigationService.navigateToWelcome();
     }
   }

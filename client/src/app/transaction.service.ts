@@ -14,7 +14,7 @@ export class TransactionService {
   constructor(private http: HttpClient, private authService: AuthService) { }
 
   getHttpOptions() {
-    const token = this.authService.token; // replace with where you store your token
+    const token = this.authService.accessToken; 
     let headers = new HttpHeaders();
     headers = headers.set('Authorization', `Bearer ${token}`);
     return { headers };

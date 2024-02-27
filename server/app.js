@@ -6,8 +6,10 @@ const path = require("path");
 const Transaction = require("./transaction.model");
 const User = require("./user.model");
 const jwt = require("jsonwebtoken");
+const cookieParser = require("cookie-parser");
 const app = express();
 const { authenticateToken } = require("./middleware");
+
 require("dotenv").config();
 
 // Serve static files from the Angular app
@@ -20,9 +22,10 @@ app.use(express.static(angularAppDirectory));
 // Middleware
 app.use(bodyParser.json());
 app.use(cors());
+app.use(cookieParser());
 
 // MongoDB connection
-const connectionString = "mongodb://localhost:27017"; // Replace with your actual string
+const connectionString = "mongodb://localhost:27017"; // Replace with your MongoDB connection string
 mongoose
   .connect(connectionString, {
     useNewUrlParser: true,
@@ -30,6 +33,20 @@ mongoose
   })
   .then(() => console.log("Connected to MongoDB"))
   .catch((err) => console.error("Error connecting to MongoDB:", err));
+
+// Generate an access token
+function generateAccessToken(userId) {
+  return jwt.sign({ _id: userId }, process.env.ACCESS_TOKEN_SECRET, {
+    expiresIn: "15m",
+  });
+}
+
+// Generate a refresh token
+function generateRefreshToken(userId) {
+  return jwt.sign({ _id: userId }, process.env.REFRESH_TOKEN_SECRET, {
+    expiresIn: "7d",
+  });
+}
 
 // API endpoints
 
@@ -52,23 +69,51 @@ app.post("/login", async (req, res) => {
       return res.status(401).send({ message: "Authentication failed" });
     }
 
-    const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "24h",
+    // Generate tokens
+    const accessToken = generateAccessToken(user._id);
+    const refreshToken = generateRefreshToken(user._id);
+
+    // Set the refresh token as a HttpOnly cookie
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
-    res.send({ user, token });
+
+    // Send the access token to the client
+    res.send({ user, accessToken });
   } catch (error) {
     console.log("Error logging in:", error);
     res.status(500).send(error);
   }
 });
 
+// Refresh endpoint
+app.post("/refresh", (req, res) => {
+  // Get the refresh token from the request cookies
+  const refreshToken = req.cookies.refreshToken;
+
+  // Verify the refresh token
+  jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
+    if (err) {
+      console.log("Error verifying refresh token:", err);
+      return res.sendStatus(403);
+    }
+
+    // Generate a new access token
+    const accessToken = generateAccessToken(user._id);
+
+    // Send the access token to the client
+    res.json({ accessToken });
+  });
+});
+
 // Endpoint to get create a transaction
 app.post("/transactions", authenticateToken, async (req, res) => {
   try {
-    const formattedDate = req.body.date.split("T")[0];
     const newTransaction = new Transaction({
       ...req.body,
-      date: formattedDate,
+      date: req.body.date,
       userId: req.user._id,
     });
     await newTransaction.save();
@@ -85,22 +130,23 @@ app.get("/transactions/totalIncome", authenticateToken, async (req, res) => {
   const { startDate, endDate } = req.query;
   try {
     if (!mongoose.Types.ObjectId.isValid(req.user._id)) {
+      console.log({
+        type: "Income",
+        date: { $gte: new Date(startDate), $lte: new Date(endDate) },
+        userId: req.user._id,
+      });
       return res.status(400).json({ message: "Invalid user ID" });
     }
-    console.log("startDate:", startDate);
-    console.log("endDate:", endDate);
-    console.log("userId:", req.user._id);
     const totalIncome = await Transaction.aggregate([
       {
         $match: {
           type: "Income",
           date: { $gte: new Date(startDate), $lte: new Date(endDate) },
-          userId: req.user._id,
+          userId: new mongoose.Types.ObjectId(req.user._id),
         },
       },
       { $group: { _id: null, total: { $sum: "$amount" } } },
     ]);
-    console.log("totalIncome:", totalIncome);
     res.json({ total: totalIncome[0]?.total || 0 });
   } catch (err) {
     console.error("Error fetching total income:", err);
@@ -120,7 +166,7 @@ app.get("/transactions/totalExpenses", authenticateToken, async (req, res) => {
         $match: {
           type: "Outcome",
           date: { $gte: new Date(startDate), $lte: new Date(endDate) },
-          userId: req.user._id,
+          userId: new mongoose.Types.ObjectId(req.user._id),
         },
       },
       { $group: { _id: null, total: { $sum: "$amount" } } },
@@ -255,7 +301,7 @@ app.delete("/transactions/:id", authenticateToken, async (req, res) => {
   }
 });
 
-// Then, catch-all route to serve Angular app for non-API requests
+// Catch-all route to serve Angular app for non-API requests
 app.get("*", function (req, res) {
   res.sendFile(path.join(angularAppDirectory, "index.html"));
 });
